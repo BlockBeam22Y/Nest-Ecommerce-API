@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import Product from './products.interface';
 
-const products = [
+let products: Product[] = [
   {
     id: 1,
     name: 'Classic Burger',
@@ -88,9 +89,54 @@ const products = [
   },
 ];
 
+let id = 11;
+
 @Injectable()
 export class ProductsRepository {
-  async getProducts() {
-    return products;
+  async getProducts(page: number, limit: number) {
+    const offset = (page - 1) * limit;
+
+    return products.slice(offset, offset + limit);
+  }
+
+  async getProductById(id: number) {
+    const product = products.find((product) => product.id === id);
+
+    return product;
+  }
+
+  async createProduct(productData: Omit<Product, 'id'>) {
+    const product = {
+      id: id++,
+      ...productData,
+    };
+
+    products = [...products, product];
+    return product.id;
+  }
+
+  async updateProduct(id: number, productData: Partial<Product>) {
+    products = products.map((product) => {
+      if (product.id === id) {
+        return {
+          id,
+          name: productData.name ?? product.name,
+          description: productData.description ?? product.description,
+          price: productData.price ?? product.price,
+          stock: productData.stock ?? product.stock,
+          imgUrl: productData.imgUrl ?? product.imgUrl,
+        };
+      } else {
+        return product;
+      }
+    });
+
+    return id;
+  }
+
+  async deleteProduct(id: number) {
+    products = products.filter((product) => product.id !== id);
+
+    return id;
   }
 }

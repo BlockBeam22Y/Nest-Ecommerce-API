@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import User from './users.interface';
 
-const users = [
+let users: User[] = [
   {
     id: 1,
     email: 'Sincere@april.biz',
@@ -93,9 +94,63 @@ const users = [
   },
 ];
 
+let id = 11;
+
 @Injectable()
 export class UsersRepository {
-  async getUsers() {
-    return users;
+  async getUsers(page: number, limit: number) {
+    const offset = (page - 1) * limit;
+
+    return users.slice(offset, offset + limit);
+  }
+
+  async getUserById(id: number) {
+    const user = users.find((user) => user.id === id);
+
+    return user;
+  }
+
+  async createUser(userData: Omit<User, 'id'>) {
+    const user = {
+      id: id++,
+      ...userData,
+    };
+
+    users = [...users, user];
+    return user.id;
+  }
+
+  async updateUser(id: number, userData: Partial<User>) {
+    users = users.map((user) => {
+      if (user.id === id) {
+        return {
+          id,
+          email: userData.email ?? user.email,
+          name: userData.name ?? user.name,
+          password: userData.password ?? user.password,
+          address: userData.address ?? user.address,
+          phone: userData.phone ?? user.phone,
+          city: userData.city ?? user.city,
+        };
+      } else {
+        return user;
+      }
+    });
+
+    return id;
+  }
+
+  async deleteUser(id: number) {
+    users = users.filter((user) => user.id !== id);
+
+    return id;
+  }
+
+  async loginUser(email: string, password: string) {
+    const user = users.find(
+      (user) => user.email === email && user.password === password,
+    );
+
+    return !!user;
   }
 }
