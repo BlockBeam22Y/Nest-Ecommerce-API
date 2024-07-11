@@ -41,14 +41,6 @@ export class ProductsController {
     });
   }
 
-  @Post('seeder')
-  @UseGuards(AuthGuard)
-  async seeder() {
-    const count = await this.productsService.preloadProducts();
-
-    return `Succesfully loaded ${count} products`;
-  }
-
   @Put(':id')
   @UseGuards(AuthGuard)
   async update(@Param('id') id: string, @Body() body) {

@@ -19,12 +19,4 @@ export class CategoriesController {
     const count = await this.categoriesService.addCategories(categoryNames);
     return `Succesfully added ${count} new categories`;
   }
-
-  @Post('seeder')
-  @UseGuards(AuthGuard)
-  async seeder() {
-    const count = await this.categoriesService.preloadCategories();
-
-    return `Succesfully loaded ${count} categories`;
-  }
 }

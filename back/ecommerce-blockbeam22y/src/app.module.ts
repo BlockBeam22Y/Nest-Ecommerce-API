@@ -7,6 +7,8 @@ import dbConfig from './config/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import preloadData from 'src/utils/preloadData';
+import { SeederService } from './seeder.service';
 
 @Module({
   imports: [
@@ -27,6 +29,12 @@ import { OrdersModule } from './modules/orders/orders.module';
     UsersModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    SeederService,
+    {
+      provide: 'preload',
+      useValue: preloadData,
+    },
+  ],
 })
 export class AppModule {}

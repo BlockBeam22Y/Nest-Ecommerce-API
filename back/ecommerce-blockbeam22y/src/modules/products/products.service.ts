@@ -44,31 +44,6 @@ export class ProductsService {
     return product.id;
   }
 
-  async preloadProducts() {
-    const products: Product[] = [];
-
-    for await (const preloadProduct of this.preloadData) {
-      const foundProduct = await this.productsRepository.findOneBy({
-        name: preloadProduct.name,
-      });
-      if (foundProduct) continue;
-
-      const category = await this.categoriesRepository.findOneByOrFail({
-        name: preloadProduct.category,
-      });
-
-      const product = this.productsRepository.create({
-        ...preloadProduct,
-        category,
-      });
-      products.push(product);
-    }
-
-    await this.productsRepository.save(products);
-
-    return products.length;
-  }
-
   async updateProduct(id: string, productData: Partial<Product>) {
     await this.productsRepository.update(id, productData);
 

@@ -39,12 +39,4 @@ export class CategoriesService {
 
     return categories.length;
   }
-
-  async preloadCategories() {
-    const categoryNames: string[] = this.preloadData.map(
-      (product) => product.category,
-    );
-
-    return this.addCategories([...new Set(categoryNames)]);
-  }
 }

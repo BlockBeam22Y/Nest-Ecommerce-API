@@ -59,7 +59,7 @@ export class OrdersService {
 
         const order = transactionalEntityManager.create(Order, {
           user,
-          date: new Date().toISOString().slice(0, 10),
+          date: new Date(),
           orderDetail,
         });
         await transactionalEntityManager.save(order);
