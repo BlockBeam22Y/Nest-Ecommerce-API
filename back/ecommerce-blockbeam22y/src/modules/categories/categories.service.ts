@@ -1,15 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Category from './categories.entity';
 import { Repository } from 'typeorm';
-import { PreloadProduct } from 'src/utils/preloadData';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoriesRepository: Repository<Category>,
-    @Inject('preload') private readonly preloadData: PreloadProduct[],
   ) {}
 
   async getCategories() {

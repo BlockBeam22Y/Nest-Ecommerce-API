@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
-import Order from './orders.entity';
+import Order from './entities/orders.entity';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import User from '../users/users.entity';
 import Product from '../products/products.entity';
-import OrderDetail from './orderDetails.entity';
+import OrderDetail from './entities/orderDetails.entity';
 
 @Injectable()
 export class OrdersService {
@@ -15,7 +19,7 @@ export class OrdersService {
   ) {}
 
   async getOrder(id: string) {
-    return this.ordersRepository.findOne({
+    const order = await this.ordersRepository.findOne({
       where: { id },
       relations: {
         orderDetail: {
@@ -23,17 +27,26 @@ export class OrdersService {
         },
       },
     });
+
+    if (order) {
+      return order;
+    } else {
+      throw new NotFoundException(`Couldn't find order with id '${id}'`);
+    }
   }
 
   async addOrder(userId: string, productIds: string[]) {
     return this.entityManager.transaction(
       async (transactionalEntityManager) => {
-        const user = await transactionalEntityManager.findOne(User, {
-          where: { id: userId },
-          relations: {
-            orders: true,
-          },
+        const user = await transactionalEntityManager.findOneBy(User, {
+          id: userId,
         });
+
+        if (!user) {
+          throw new BadRequestException(
+            `Couldn't find user with id '${userId}'`,
+          );
+        }
 
         const orderDetail = transactionalEntityManager.create(OrderDetail, {
           price: 0,
@@ -45,14 +58,23 @@ export class OrdersService {
             id: productId,
           });
 
-          if (product.stock !== 0) {
-            product.stock--;
-            await transactionalEntityManager.save(product);
-            console.log(product);
-
-            orderDetail.products.push(product);
-            orderDetail.price += +product.price;
+          if (!product) {
+            throw new BadRequestException(
+              `Couldn't find product with id '${productId}'`,
+            );
           }
+
+          if (product.stock === 0) {
+            throw new BadRequestException(
+              `Product with id '${productId}' is out of stock`,
+            );
+          }
+
+          product.stock--;
+          await transactionalEntityManager.save(product);
+
+          orderDetail.products.push(product);
+          orderDetail.price += +product.price;
         }
 
         await transactionalEntityManager.save(orderDetail);
@@ -63,9 +85,6 @@ export class OrdersService {
           orderDetail,
         });
         await transactionalEntityManager.save(order);
-
-        user.orders.push(order);
-        await transactionalEntityManager.save(user);
 
         return order;
       },

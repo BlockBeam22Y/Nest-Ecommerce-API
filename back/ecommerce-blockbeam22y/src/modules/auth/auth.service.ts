@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import User from '../users/users.entity';
 import { Repository } from 'typeorm';
@@ -13,9 +13,9 @@ export class AuthService {
     const user = await this.usersRepository.findOneBy({ email, password });
 
     if (user) {
-      return 'Logged in successfully';
+      return user;
     } else {
-      return 'Invalid email or password';
+      throw new BadRequestException('Email or password invalid');
     }
   }
 }
