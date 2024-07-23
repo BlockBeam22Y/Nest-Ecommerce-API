@@ -9,6 +9,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import preloadData from 'src/utils/preloadData';
 import { SeederService } from './seeder.service';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SeederService } from './seeder.service';
     }),
     AuthModule,
     CategoriesModule,
+    FilesModule,
     OrdersModule,
     ProductsModule,
     UsersModule,

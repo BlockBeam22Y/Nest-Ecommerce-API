@@ -11,7 +11,7 @@ import {
 import { v4 as uuid } from 'uuid';
 
 @Entity({
-  name: 'orderDetails',
+  name: 'order_details',
 })
 export default class OrderDetail {
   @PrimaryGeneratedColumn('uuid')

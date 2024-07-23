@@ -35,7 +35,8 @@ export default class Product {
   stock: number;
 
   @Column({
-    default: 'https://example.com/images/product.jpg',
+    default:
+      'https://res.cloudinary.com/dil8imipm/image/upload/v1721694666/bmnqbnt7zbb1vft9iceu.png',
   })
   imgUrl: string;
 
