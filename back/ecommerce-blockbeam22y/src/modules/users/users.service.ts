@@ -34,13 +34,6 @@ export class UsersService {
     }
   }
 
-  async createUser(userData: Omit<User, 'id' | 'orders'>) {
-    const user = this.usersRepository.create(userData);
-    await this.usersRepository.save(user);
-
-    return user.id;
-  }
-
   async updateUser(id: string, userData: Partial<User>) {
     const user = await this.usersRepository.findOneBy({ id });
 

@@ -15,3 +15,5 @@ export const cloud = {
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 };
+
+export const jwtSecret = process.env.JWT_SECRET;

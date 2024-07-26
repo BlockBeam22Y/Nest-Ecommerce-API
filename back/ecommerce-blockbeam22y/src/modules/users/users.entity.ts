@@ -20,9 +20,7 @@ export default class User {
   })
   email: string;
 
-  @Column({
-    length: 20,
-  })
+  @Column()
   password: string;
 
   @Column('integer')

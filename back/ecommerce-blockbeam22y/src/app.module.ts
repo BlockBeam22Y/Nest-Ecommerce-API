@@ -10,6 +10,8 @@ import { OrdersModule } from './modules/orders/orders.module';
 import preloadData from 'src/utils/preloadData';
 import { SeederService } from './seeder.service';
 import { FilesModule } from './modules/files/files.module';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtSecret } from './config/envs';
 
 @Module({
   imports: [
@@ -21,6 +23,13 @@ import { FilesModule } from './modules/files/files.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return configService.get('typeorm');
+      },
+    }),
+    JwtModule.register({
+      global: true,
+      secret: jwtSecret,
+      signOptions: {
+        expiresIn: '1h',
       },
     }),
     AuthModule,

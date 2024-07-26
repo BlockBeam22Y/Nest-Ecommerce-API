@@ -37,6 +37,10 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
+  passwordConfirm: string;
+
+  @IsNotEmpty()
+  @IsString()
   @MinLength(3)
   @MaxLength(80)
   address: string;
