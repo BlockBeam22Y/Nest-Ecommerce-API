@@ -12,14 +12,18 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { SetPermissions } from 'src/decorators/permissions.decorator';
+import PermissionFlagsBits from 'src/utils/PermissionFlagsBits';
 
 @Controller('files')
+@SetPermissions(PermissionFlagsBits.UploadFiles)
+@UseGuards(AuthGuard, RolesGuard)
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Post('uploadImage/:id')
-  @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   async upload(
     @Param('id', ParseUUIDPipe) id: string,

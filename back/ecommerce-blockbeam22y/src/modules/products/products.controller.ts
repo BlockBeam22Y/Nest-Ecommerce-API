@@ -13,27 +13,36 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from 'src/modules/auth/auth.guard';
+import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 import { CreateProductDto } from './dtos/createProduct.dto';
 import { UpdateProductDto } from './dtos/updateProduct.dto';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { SetPermissions } from 'src/decorators/permissions.decorator';
+import PermissionFlagsBits from 'src/utils/PermissionFlagsBits';
+import { SetPublic } from 'src/decorators/public.decorator';
 
 @Controller('products')
+@UseGuards(AuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
+  @SetPublic()
+  @SetPermissions(PermissionFlagsBits.ViewProducts)
   @UsePipes(new ValidationPipe({ transform: true }))
   async get(@Query('page') page: number, @Query('limit') limit: number) {
     return this.productsService.getProducts(page || 1, limit || 5);
   }
 
   @Get(':id')
+  @SetPublic()
+  @SetPermissions(PermissionFlagsBits.ViewProducts)
   async getById(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.getProductById(id);
   }
 
   @Post()
-  @UseGuards(AuthGuard)
+  @SetPermissions(PermissionFlagsBits.ManageProducts)
   async create(@Body() body: CreateProductDto) {
     const { name, description, price, stock, imgUrl, categoryId } = body;
 
@@ -53,7 +62,7 @@ export class ProductsController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @SetPermissions(PermissionFlagsBits.ManageProducts)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateProductDto,
@@ -75,7 +84,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @SetPermissions(PermissionFlagsBits.ManageProducts)
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     const productId = await this.productsService.deleteProduct(id);
 

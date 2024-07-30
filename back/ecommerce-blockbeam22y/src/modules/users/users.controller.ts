@@ -10,13 +10,19 @@ import {
   ParseUUIDPipe,
   UsePipes,
   ValidationPipe,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { AuthGuard } from 'src/modules/auth/auth.guard';
+import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 import { UpdateUserDto } from './dtos/updateUser.dto';
+import { SetPermissions } from 'src/decorators/permissions.decorator';
+import PermissionFlagsBits from 'src/utils/PermissionFlagsBits';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import PermissionsBitField from 'src/utils/PermissionsBitField';
 
 @Controller('users')
-@UseGuards(AuthGuard)
+@SetPermissions(PermissionFlagsBits.ManageUsers)
+@UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -26,13 +32,19 @@ export class UsersController {
     const users = await this.usersService.getUsers(page || 1, limit || 5);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return users.map(({ password, ...userData }) => userData);
+    return users.map(({ password, isAdmin, ...userData }) => userData);
   }
 
   @Get(':id')
-  async getById(@Param('id', ParseUUIDPipe) id: string) {
+  async getById(@Param('id', ParseUUIDPipe) id: string, @Req() request) {
+    const userRole: PermissionsBitField = request.user.role;
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userData } = await this.usersService.getUserById(id);
+    const { password, isAdmin, ...userData } =
+      await this.usersService.getUserById(
+        id,
+        userRole.has(PermissionsBitField.Flags.ViewOrders),
+      );
 
     return userData;
   }

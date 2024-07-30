@@ -17,3 +17,5 @@ export const cloud = {
 };
 
 export const jwtSecret = process.env.JWT_SECRET;
+
+export const masterEmail = process.env.MASTER_EMAIL;

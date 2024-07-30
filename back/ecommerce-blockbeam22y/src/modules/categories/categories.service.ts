@@ -10,10 +10,10 @@ export class CategoriesService {
     private readonly categoriesRepository: Repository<Category>,
   ) {}
 
-  async getCategories() {
+  async getCategories(showProducts: boolean) {
     return this.categoriesRepository.find({
       relations: {
-        products: true,
+        products: showProducts,
       },
     });
   }

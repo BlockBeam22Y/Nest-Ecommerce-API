@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import User from './users.entity';
 import Order from '../orders/entities/orders.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -19,11 +20,11 @@ export class UsersService {
     });
   }
 
-  async getUserById(id: string) {
+  async getUserById(id: string, showOrders: boolean) {
     const user = await this.usersRepository.findOne({
       where: { id },
       relations: {
-        orders: true,
+        orders: showOrders,
       },
     });
 
@@ -38,6 +39,10 @@ export class UsersService {
     const user = await this.usersRepository.findOneBy({ id });
 
     if (user) {
+      if (userData.password) {
+        userData.password = await bcrypt.hash(userData.password, 10);
+      }
+
       await this.usersRepository.update(id, userData);
 
       return user.id;

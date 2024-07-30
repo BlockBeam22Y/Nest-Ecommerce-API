@@ -4,6 +4,7 @@ import User from '../users/users.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { masterEmail } from 'src/config/envs';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
       const user = this.usersRepository.create({
         ...userData,
         password: hashedPassword,
+        isAdmin: userData.email === masterEmail,
       });
 
       await this.usersRepository.save(user);
@@ -47,6 +49,7 @@ export class AuthService {
           sub: user.id,
           id: user.id,
           email: user.email,
+          isAdmin: user.isAdmin,
         });
 
         return token;
