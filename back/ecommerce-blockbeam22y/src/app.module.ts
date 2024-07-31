@@ -7,11 +7,10 @@ import dbConfig from './config/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { OrdersModule } from './modules/orders/orders.module';
-import preloadData from 'src/utils/preloadData';
-import { SeederService } from './seeder.service';
 import { FilesModule } from './modules/files/files.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtSecret } from './config/envs';
+import { SeederModule } from './modules/seeder/seeder.module';
 
 @Module({
   imports: [
@@ -37,15 +36,10 @@ import { jwtSecret } from './config/envs';
     FilesModule,
     OrdersModule,
     ProductsModule,
+    SeederModule,
     UsersModule,
   ],
   controllers: [],
-  providers: [
-    SeederService,
-    {
-      provide: 'preload',
-      useValue: preloadData,
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}

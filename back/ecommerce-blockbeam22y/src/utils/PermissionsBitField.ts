@@ -77,7 +77,6 @@ export const Roles = {
     PermissionFlagsBits.ViewOrders,
     PermissionFlagsBits.CreateOrders,
     PermissionFlagsBits.ViewProducts,
-    PermissionFlagsBits.UploadFiles,
   ]),
   Admin: new PermissionsBitField(PermissionsBitField.All),
 };
