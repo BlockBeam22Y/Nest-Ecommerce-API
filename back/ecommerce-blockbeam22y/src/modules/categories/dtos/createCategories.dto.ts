@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -14,5 +15,11 @@ export class CreateCategoriesDto {
   @IsString({ each: true })
   @MinLength(5, { each: true })
   @MaxLength(20, { each: true })
+  @ApiProperty({
+    description: 'The names of the categories to be created',
+    minLength: 5,
+    maxLength: 20,
+    example: ['tablet', 'headphones'],
+  })
   categoryNames: string[];
 }
